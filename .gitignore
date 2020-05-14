@@ -9,10 +9,6 @@ target/*
 /target
 .sts4-cache/
 .vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 _site/
 Presentation and CV/~$DevOps - Rakivnenko D.N. - EPAM.pptx
 Presentation and CV/DevOps - Rakivnenko D.N. - EPAM.pptx
