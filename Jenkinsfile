@@ -42,11 +42,10 @@ node('mainnode') {
         server.publishBuildInfo buildInfo
     }
 
-    stage ('Deploying to Tomcat'){
+    stage ('Deploying to Tomcat') {
         deploy adapters: [tomcat9(credentialsId: '439ff615-e2f6-40f1-8988-8d03628abde9', path: '', url: 'http://10.128.0.100:8080')], contextPath: 'petclinic', war: 'target/*.war'
     }    
-    stage ('Sending emails to recepients')
-            {
+    stage ('Sending emails to recepients') {
     emailext attachLog: true, body: '${JELLY_SCRIPT,template="html-with-health-and-console.jelly"}', recipientProviders: [brokenBuildSuspects(), brokenTestsSuspects(), upstreamDevelopers(), developers(), requestor()], subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: '$DEFAULT_RECIPIENTS'
     }
   }       
