@@ -2,8 +2,8 @@ properties(
     [
         buildDiscarder(
             logRotator(
-                daysToKeepStr: '10',
-                numToKeepStr: '10'
+                daysToKeepStr: '5',
+                numToKeepStr: '5'
             )
         )
     ]
@@ -18,7 +18,7 @@ node('mainnode') {
     def buildInfo
     def AppVersion = sh script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true
     def AppName = sh script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout', returnStdout: true
-    currentBuild.displayName = "${BUILD_TIMESTAMP}_build#${BUILD_NUMBER}_${AppName}_${AppVersion}" 
+    currentBuild.displayName = "${AppName}_${AppVersion}_${BUILD_TIMESTAMP}_build#${BUILD_NUMBER}" 
     
     withEnv(["JAVA_HOME=${ tool 'Java 8' }", "PATH+MAVEN=${tool 'Apache Maven 3.5.4'}/bin:${env.JAVA_HOME}/bin"]) {
 
@@ -63,7 +63,7 @@ node('mainnode') {
         deploy adapters: [tomcat9(credentialsId: '439ff615-e2f6-40f1-8988-8d03628abde9', path: '', url: 'http://10.128.0.100:8080')], contextPath: 'petclinic', war: 'target/*.war'
     }    
     stage ('Sending emails to recepients') {
-    emailext attachLog: true, body: '${JELLY_SCRIPT,template="html-with-health-and-console.jelly"}', recipientProviders: [brokenBuildSuspects(), brokenTestsSuspects(), upstreamDevelopers()], subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: '$DEFAULT_RECIPIENTS'
+        emailext attachLog: true, body: '${JELLY_SCRIPT,template="html-with-health-and-console2.jelly"}', recipientProviders: [brokenBuildSuspects(), brokenTestsSuspects(), upstreamDevelopers()], subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: '$DEFAULT_RECIPIENTS'
     }
   }       
 }
