@@ -2,8 +2,8 @@ properties(
     [
         buildDiscarder(
             logRotator(
-                daysToKeepStr: '10',
-                numToKeepStr: '10'
+                daysToKeepStr: '5',
+                numToKeepStr: '5'
             )
         )
     ]
@@ -35,6 +35,7 @@ node('mainnode') {
     stage('SonarQube') { 
         withSonarQubeEnv('Sonar Main Server') { 
             sh """
+            mvn compile && \
             $scanerHome/bin/sonar-scanner \
             -Dsonar.projectKey=$projectName \
             -Dsonar.java.binaries=target/classes \
