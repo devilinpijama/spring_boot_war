@@ -37,7 +37,7 @@ node('mainnode') {
             sh """
             $scanerHome/bin/sonar-scanner \
             -Dsonar.projectKey=$projectName \
-            -Dsonar.java.binaries=./target/classes \
+            -Dsonar.java.binaries=target/classes \
             -Dsonar.sources=.
             """
         }
