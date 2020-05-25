@@ -13,11 +13,11 @@ node('mainnode') {
     def mvnHome = tool 'Apache Maven 3.5.4'
     def scanerHome = tool 'Sonar Scanner 4.2.0.1873 LTS'
     def server = Artifactory.server 'main_artifactory'
-    def projectName = 'war_petclinic'
     def rtMaven = Artifactory.newMavenBuild()
     def buildInfo
     def AppVersion = sh script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true
     def AppName = sh script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout', returnStdout: true
+    def projectName = "${AppName}"
     currentBuild.displayName = "${AppName}_${AppVersion}_${BUILD_TIMESTAMP}_build#${BUILD_NUMBER}" 
     
     withEnv(["JAVA_HOME=${ tool 'Java 8' }", "PATH+MAVEN=${tool 'Apache Maven 3.5.4'}/bin:${env.JAVA_HOME}/bin"]) {
@@ -39,7 +39,7 @@ node('mainnode') {
             $scanerHome/bin/sonar-scanner \
             -Dsonar.projectKey=$projectName \
             -Dsonar.java.binaries=target/classes \
-            -Dsonar.sources=.
+            -Dsonar.sources=. 
             """
         }
     }
@@ -55,7 +55,7 @@ node('mainnode') {
     stage('Maven build') {
         rtMaven.run pom: '${WORKSPACE}/pom.xml', goals: 'clean install -Dmaven.test.skip=true', buildInfo: buildInfo
     }
-
+ } 
     stage ('Publish build info') {
         server.publishBuildInfo buildInfo
     }
@@ -66,5 +66,4 @@ node('mainnode') {
     stage ('Sending emails to recepients') {
         emailext attachLog: true, body: '${JELLY_SCRIPT,template="html-with-health-and-console2.jelly"}', recipientProviders: [brokenBuildSuspects(), brokenTestsSuspects(), upstreamDevelopers()], subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: '$DEFAULT_RECIPIENTS'
     }
-  }       
 }
